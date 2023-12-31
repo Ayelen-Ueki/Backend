@@ -1,44 +1,58 @@
-class ProductManager{
-    //Conteo de Ids
-    static contadorIds = 0;
-    //Tienda
-    constructor(){
-        this.products=[];
-    }
-    //Para agregar productos en la tienda
-    addProduct(title, description, price, thumbnail, code, stock, id){
-        //Valida que no falte ningún dato a la hora de agregar un producto
-        if(!title|| !description|| !price|| !thumbnail|| !code|| !stock){
-            throw new Error("Todos los campos son obligatorios.");
-        }
-        //Para incrementar el número de id al agregar un producto
-        const id = ProductManager.contadorIds++;
-        //Agrega productos no repetidos con el metodo some
-        if(!this.products.some((p)=>p.id===id)){
-            let newProduct = { id, title, description, price, thumbnail, code, stock };
-            this.products.push(newProduct);
-            return newProduct;
-        } else{
-            throw new Error(`Ya existe un producto con el identificador ${id}.`);
-        }
-        }
+const fs = require('fs');
+const path = require('path');
 
+class ProductManager {
+  static contadorIds = 0;
+
+  constructor() {
+    this.products = [];
+    this.filePath = path.join(__dirname, 'productos.json');
+  }
+
+  addProduct(title, description, price, thumbnail, code, stock) {
+    this.validateProductData(title, description, price, thumbnail, code, stock);
+
+    const id = ProductManager.contadorIds++;
+    
+    if (!this.isProductExists(id)) {
+      const newProduct = { id, title, description, price, thumbnail, code, stock };
+      this.products.push(newProduct);
+      this.saveProductsToFile();
+      return newProduct;
+    } else {
+      throw new Error(`Ya existe un producto con el identificador ${id}.`);
     }
-    //Para buscar productos en la tienda por Id
-    getProductById(id){
-        let product =  this.products.find((p) => p.id === id)
-        if (product){
-            return product;
-        } else {
-            throw new Error(`Id: ${id} not found`);
-        }
+  }
+
+  getProductById(id) {
+    const product = this.products.find((p) => p.id === id);
+    if (product) {
+      return product;
+    } else {
+      throw new Error(`Producto con el identificador ${id} no encontrado.`);
     }
+  }
+
+  saveProductsToFile() {
+    fs.writeFileSync(this.filePath, JSON.stringify(this.products, null, 2));
+    console.log(`Productos guardados en ${this.filePath}`);
+  }
+
+  validateProductData(title, description, price, thumbnail, code, stock) {
+    if (!title || !description || !price || !thumbnail || !code || !stock) {
+      throw new Error("Todos los campos son obligatorios.");
+    }
+  }
+
+  isProductExists(id) {
+    return this.products.some((p) => p.id === id);
+  }
+}
 
 const product = new ProductManager();
 
-//Agregar productos
 try {
-    const product1 = product.addProduct("Taza", "Taza de gatito", 5000, "C:\Users\aye_u\OneDrive\Documentos\Backend\Fotos\Taza de Gatito.jpeg", 1, 10)
-} catch (error){
-    console.error(error.message);
+  const product1 = product.addProduct("Taza", "Taza de gatito", 5000, "Fotos/Taza_de_Gatito.jpeg", 1, 10);
+} catch (error) {
+  console.error(error.message);
 }
