@@ -25,7 +25,7 @@ class ProductManager{
 
     }
     //Para buscar productos en la tienda por Id
-    getProductById(id){
+    getProductById(id);{
         let product =  this.products.find((p) => p.id === id)
         if (product){
             return product;
