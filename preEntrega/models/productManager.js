@@ -1,55 +1,54 @@
-import {promises as fs} from 'fs';
-import crypto from 'crypto';
-import { stringify } from 'querystring';
+import { Router } from "express";
+import uuid4 from "uuid4";
 
-export class ProductManager {
-    contructor(path){
-        this.products = []
-        this.path = path
-    }
-async getProducts() {
-    const prods = JSON.parse(await fs.readFile(this.path, 'utf-8 '))
-  }
-async getProductsById(id){
-    const prods = JSON.parse(await fs.readFile(this.path, 'utf-8'))
-    const prod = prods.find(producto => producto.id === id)
-    return prod
-}
-async addProduct(prod){
-    const prods = JSON.parse(await fs.readFile(this.path, 'utf-8'))
-    const existProd = prods.find(producto => producto.id === prod.id)
-    if(existProd){
-        return false
-    }
-    prod.id = crypto.randomBytes(16).toString('hex')
-    prods.push(prod)
-    await fs.writeFile(this.path, JSON.stringify(prods))
-    return true
-}
-async updateProduct(id, prod) {
-    const prods =  JSON.parse(await  fs.readFile(this.path, 'utf-8'))
-    const prod = prods.find(producto => producto.id === id)
-    prod. title = producto.title 
-    prod.description = producto.description 
-    prod. price = producto.price
-    prod.stock = producto.stock
-    prod.thumbnail = producto.thumbnail
-    prods.push(prod)
-    await fs.writeFile(this.path, JSON.stringify(prods))
-    return true
-}
-async deleteProduct(id) {
-    const prods = JSON (await fs.writeFile(this.path, 'utf-8'))
-    const prod = prods.find (producto => producto.id === id)
+import { Router } from "express";
 
-    if(prod){
-        prods.filter (producto => producto.id !== id)
-        return true
-    }
-    else{
-        return false
-    }
-}
+const routerProd = Router();
 
-}
+// ... (existing routes)
 
+// Actualizar un producto por ID
+routerProd.put('/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // Validar que el ID sea un UUID válido
+        if (!/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(id)) {
+            return res.status(400).json({ error: "ID inválido" });
+        }
+
+        const existingProduct = await productManager.getProductById(id);
+
+        // Verificar si el producto existe
+        if (!existingProduct) {
+            return res.status(404).json({ error: "Producto no encontrado" });
+        }
+
+        // Actualizar los campos del producto con los proporcionados en el cuerpo de la solicitud
+        const updatedProduct = {
+            id,
+            title: req.body.title || existingProduct.title,
+            description: req.body.description || existingProduct.description,
+            code: req.body.code || existingProduct.code,
+            price: req.body.price || existingProduct.price,
+            status: existingProduct.status, // Mantener el estado actual
+            stock: req.body.stock || existingProduct.stock,
+            category: req.body.category || existingProduct.category,
+            thumbnail: req.body.thumbnail || existingProduct.thumbnail,
+        };
+
+        // Actualizar el producto
+        const confirmation = await productManager.updateProduct(id, updatedProduct);
+
+        if (confirmation) {
+            res.status(200).json({ message: "Producto actualizado correctamente", data: updatedProduct });
+        } else {
+            res.status(404).json({ error: "Producto no encontrado" });
+        }
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).json({ error: "Error al actualizar el producto por ID" });
+    }
+});
+
+export default routerProd;
