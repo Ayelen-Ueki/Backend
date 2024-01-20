@@ -1,54 +1,61 @@
-import { Router } from "express";
-import uuid4 from "uuid4";
+import { promises as fs } from 'fs';
+import crypto from 'crypto';
 
-import { Router } from "express";
-
-const routerProd = Router();
-
-// ... (existing routes)
-
-// Actualizar un producto por ID
-routerProd.put('/:id', async (req, res) => {
-    try {
-        const { id } = req.params;
-
-        // Validar que el ID sea un UUID válido
-        if (!/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(id)) {
-            return res.status(400).json({ error: "ID inválido" });
-        }
-
-        const existingProduct = await productManager.getProductById(id);
-
-        // Verificar si el producto existe
-        if (!existingProduct) {
-            return res.status(404).json({ error: "Producto no encontrado" });
-        }
-
-        // Actualizar los campos del producto con los proporcionados en el cuerpo de la solicitud
-        const updatedProduct = {
-            id,
-            title: req.body.title || existingProduct.title,
-            description: req.body.description || existingProduct.description,
-            code: req.body.code || existingProduct.code,
-            price: req.body.price || existingProduct.price,
-            status: existingProduct.status, // Mantener el estado actual
-            stock: req.body.stock || existingProduct.stock,
-            category: req.body.category || existingProduct.category,
-            thumbnail: req.body.thumbnail || existingProduct.thumbnail,
-        };
-
-        // Actualizar el producto
-        const confirmation = await productManager.updateProduct(id, updatedProduct);
-
-        if (confirmation) {
-            res.status(200).json({ message: "Producto actualizado correctamente", data: updatedProduct });
-        } else {
-            res.status(404).json({ error: "Producto no encontrado" });
-        }
-    } catch (error) {
-        console.error(error.message);
-        res.status(500).json({ error: "Error al actualizar el producto por ID" });
+export class ProductManager {
+    constructor(path) {
+        this.path = path;
     }
-});
+
+    async getProducts() {
+        const prods = JSON.parse(await fs.readFile(this.path, 'utf-8'));
+        return prods;
+    }
+
+    async getProductById(id) {
+        const prods = await this.getProducts();
+        const prod = prods.find(producto => producto.id === id);
+        return prod;
+    }
+
+    async addProduct(newProduct) {
+        const prods = await this.getProducts();
+        const existProd = prods.find(producto => producto.id === newProduct.id);
+
+        if (existProd) {
+            return false; // Product with the same ID already exists
+        }
+
+        newProduct.id = crypto.randomBytes(16).toString('hex');
+        prods.push(newProduct);
+
+        await fs.writeFile(this.path, JSON.stringify(prods, null, 2));
+        return true; // Product added successfully
+    }
+
+    async updateProduct(id, updatedProductData) {
+        const prods = await this.getProducts();
+        const index = prods.findIndex(producto => producto.id === id);
+
+        if (index !== -1) {
+            prods[index] = { ...prods[index], ...updatedProductData };
+            await fs.writeFile(this.path, JSON.stringify(prods, null, 2));
+            return true; // Product updated successfully
+        } else {
+            return false; // Product not found
+        }
+    }
+
+    async deleteProduct(id) {
+        const prods = await this.getProducts();
+        const filteredProds = prods.filter(producto => producto.id !== id);
+
+        if (filteredProds.length < prods.length) {
+            await fs.writeFile(this.path, JSON.stringify(filteredProds, null, 2));
+            return true; // Product deleted successfully
+        } else {
+            return false; // Product not found
+        }
+    }
+}
 
 export default routerProd;
