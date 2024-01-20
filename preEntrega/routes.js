@@ -109,3 +109,5 @@ routerProd.delete('/:pid', async (req, res) => {
 
 export default routerProd;
 
+// PARA EL CARRITO
+
