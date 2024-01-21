@@ -1,4 +1,9 @@
-post('/', async (req, res) => {
+import { Router } from "express";
+import { v4 as uuidv4 } from 'uuid';
+
+const routerCart = Router();
+
+routerCart.post('/', async (req, res) => {
     try {
         const { title, description, code, price, stock, category } = req.body;
 
