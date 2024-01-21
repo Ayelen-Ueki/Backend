@@ -1,7 +1,10 @@
 import { Router } from "express";
 import { v4 as uuidv4 } from 'uuid';
 
-const routerCart = Router();
+const express = require('express')
+const{Router}=express
+
+const routerCart = new Router();
 
 routerCart.post('/', async (req, res) => {
     try {
