@@ -1,0 +1,11 @@
+<div>
+    <h1>Hola {{name}}, estos son todos los usuarios: </h1>
+    <!-- El interador Each me va a permitir recorrer todos los elementos de mi array -->
+    {{#each users}}
+    <div>
+        <p>{{this.name}}</p>
+        <p>{{this.lastName}}</p>
+    </div>
+    <!-- Tengo que cerrar mi iterador cuando termine de usarlo-->
+    {{/each}}
+</div>

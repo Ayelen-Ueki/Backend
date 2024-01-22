@@ -26,14 +26,30 @@ Router.get('/home', (req, res)=>{
     //se usa para mostrar cosas de forma dinamica entre {{}} --> ver en home.handlebars
     res.render("home", {nombre: 'Aye'});
 })
+
+    // Router.get('/userDetails', (req, res)=>{
+    //     res.render("users", {
+    //     name: 'Ayelen',
+    //     lastName: 'Ueki',
+    //     age: '27',
+    //     email: 'ayeueki@gmail.com',
+    //     phone: '111536430055'
+    //     });
+    // })
+
 Router.get('/userDetails', (req, res)=>{
-    res.render("users", {
-    name: 'Ayelen',
-    lastName: 'Ueki',
-    age: '27',
-    email: 'ayeueki@gmail.com',
-    phone: '111536430055'
-    });
+    //Para obtener usuarios de forma aleatoria
+    res.render("home", users[Math.floor(Math.random()*users.length)]);
 })
+
+    
+Router.get('/allUsers', (req, res)=>{
+    //Para obtener usuarios de forma aleatoria
+    res.render("allUsers",{
+        name: 'Aye',
+        users: users 
+    })
+})
+
 
 module.exports = router
