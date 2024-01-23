@@ -1,5 +1,6 @@
 import { Express } from "express";
 import routerProd from './routes.js';
+import routerCart from './cartRoutes.js';
 import path from 'path'
 import {__dirname} from './paths.js ';
 

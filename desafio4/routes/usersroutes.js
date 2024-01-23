@@ -46,6 +46,7 @@ Router.get('/userDetails', (req, res)=>{
 Router.get('/allUsers', (req, res)=>{
     //Para obtener usuarios de forma aleatoria
     res.render("allUsers",{
+        IsAdmin: true,
         name: 'Aye',
         users: users 
     })
