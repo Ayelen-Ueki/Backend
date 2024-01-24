@@ -1,7 +1,34 @@
 <!--Aca va a estar mi vista, lo que se va a mostrar gracias al body en main.handlebars-->
-<h1>Hola, {{nombre}}</h1>
+{{!-- <h1>Hola, {{nombre}}</h1>
 <h1>NAME, {{name}}</h1>
 <h1>LAST NAME, {{lastName}}</h1>
 <h1>AGE, {{age}}</h1>
 <h1>EMAIL, {{email}}</h1>
-<h1>CEL, {{phone}}</h1>
+<h1>CEL, {{phone}}</h1> --}}
+
+    <div>
+        <h1>
+            Chat
+        </h1>
+        <div id="caja" class="caja">
+
+        </div>
+    </div>
+
+
+<form>
+  <div class="mb-3">
+    <label for="name" class="form-label">Nombre</label>
+    <input type="text" class="form-control" id="name" aria-describedby="emailHelp">
+  </div>
+  <div class="mb-3">
+    <label for="message" class="form-label">Deja tu mensaje</label>
+    <input type="text" class="form-control" id="message">
+  </div>
+  <button type="submit" class="btn btn-primary">Enviar</button>
+  <input type="submit" value="Enviar" class="btn btn-primary">
+</form>
+
+{{!-- Configuro mi home para que se conecte con el servidor --}}
+<script src="/socket.io/socket.io.js"></script>
+<script src="/public/js/index.js"></script>

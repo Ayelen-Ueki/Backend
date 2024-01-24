@@ -29,9 +29,21 @@ const homeRouter = require('./routes/home.router.js')
 app.use('/home', homeRouter)
 
 
+//Para conectarme con el cliente
+const http =require('http')
+//Server http
+const server = http.createServer(app)
+//Para inicializar el server
+const {Server} = require('socket.io')
+const io = new Server(server)
+//Para escuchar la conexion
+io.on('conection', (socket)=>{
+
+})
 
 
-app.listen(PORT, () => {
+//Tengo que escuchar a mi servidor
+server.listen(PORT, () => {
     console.log(`Server on port ${PORT}`)
 })
 

@@ -55,7 +55,8 @@ const router = new Router()
 // })
 
 router.get('/', (req, res)=>{
-    res.send("Hola mundo")
+    //Para renderizar la vista que cree en home.handlebars
+    res.render('home', {})
 })
 
 
