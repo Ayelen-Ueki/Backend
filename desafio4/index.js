@@ -4,19 +4,32 @@ import path from 'path'
 import {__dirname} from './paths.js ';
 
 
-const PORT = 8000
+//Activo y pongo en funcionamiento express
+const express = require('express')
 const app = express()
+//Guardamos el puerto en el que vamos a trabajar en una constante, ya sea el 8080 que es nuestro server local o cualquiera que se le asigen a la app para trabajar (esto se hace con process)
+const PORT = 8080 || process.env.PORT    
+
 // Para que express reconozca handlebars
 const handlebars = require('express-handlebars')
 
-//Configurar carpeta estatica
-app.use(express.static(__dirname+'/public'))
-//Para inicializar handlebars dentro de mi aplicacion
+//Configurar carpeta estatica (publica)
+app.use(express.static(__dirname +'/public'))
+
+//Para inicializar handlebars dentro de mi aplicacion (configurar el motor de plantilla)
 app.engine('handlebars', handlebars.engine())
-//Para que express reconozca la carpeta views
-app.set('views', __dirname, '/views')
 //Para habilitar handlebrs para las siguientes views
 app.set('view engine', 'handlebars')
+//Para que express reconozca la carpeta views
+app.set('views', __dirname, '/views')
+
+//Me traigo mi router de home.router
+const homeRouter = require('./routes/home.router.js')
+//Inicializo mis rutas desde la carpeta principal para que las reconozca. El primer argumento va asobreponerse a todas als rutas que pertenecen a todas las rutas a las que quiera acceder
+app.use('/home', homeRouter)
+
+
+
 
 app.listen(PORT, () => {
     console.log(`Server on port ${PORT}`)
