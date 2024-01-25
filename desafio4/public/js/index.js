@@ -5,6 +5,9 @@ socket.on('message', (data)=>{
     console.log(data)
     //Usamos la funcion que nos envia los mensajes al html
     render(data)
+    //Para agregar un scroll para mostrar mensajes cuando se vuelva muy largo el array y que la barra se mantenga siempre abajo: que mueste siempre el ultimo mensaje
+    let chat = document.getElementById('caja')
+    chat.scrollTop = chat.scrollHeight
 })
 
 const render = (data) =>{
