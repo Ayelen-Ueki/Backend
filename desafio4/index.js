@@ -46,7 +46,8 @@ io.on('conection', (socket)=>{
     //Para escuchar el mensaje que esta enviando el cliente
     socket.on('new-messages', (data)=>{
         arrMessage.push(data)
-        socket.emit('messages-all', arrMessage)
+        //utilizo la propiedad sockets de io para conectarme a varios sockes a la vez y no solo al que estoy usando yo
+        io.sockets.emit('messages-all', arrMessage)
     })
 })
 

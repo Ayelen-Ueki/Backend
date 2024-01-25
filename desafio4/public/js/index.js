@@ -3,6 +3,8 @@ const socket = io()
 //El primer parametro de on que es lo que me permite escuchar eventos es el evento que sale del lado del server y que yo quiero que se escuche del lado del cliente en este
 socket.on('message', (data)=>{
     console.log(data)
+    //Usamos la funcion que nos envia los mensajes al html
+    render(data)
 })
 
 const render = (data) =>{
@@ -14,7 +16,8 @@ const render = (data) =>{
             </strong>
         </div>
         `)
-    })
+    //Usamos el .join para que los mensajes se muestren unidos por un espacio en lugar de una coma    
+    }).join(' ')
     //Para meter ese codigo dentro de mi html en home.handlebars
     document.getElementById('caja').innerHTML = hotml
 }
