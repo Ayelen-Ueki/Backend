@@ -13,6 +13,9 @@ const PORT = 8080 || process.env.PORT
 // Para que express reconozca handlebars
 const handlebars = require('express-handlebars')
 
+//Array para guardar mis mensajes
+let arrMessage = []
+
 //Configurar carpeta estatica (publica)
 app.use(express.static(__dirname +'/public'))
 
@@ -38,7 +41,13 @@ const {Server} = require('socket.io')
 const io = new Server(server)
 //Para escuchar la conexion
 io.on('conection', (socket)=>{
-
+    //Para enviar mensajes desde el servidor que luego va a tener que escuchar mi cliente
+    socket.emit('welcome', 'hola')
+    //Para escuchar el mensaje que esta enviando el cliente
+    socket.on('new-messages', (data)=>{
+        arrMessage.push(data)
+        socket.emit('messages-all', arrMessage)
+    })
 })
 
 
