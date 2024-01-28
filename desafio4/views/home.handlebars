@@ -5,10 +5,10 @@
 <h1>AGE, {{age}}</h1>
 <h1>EMAIL, {{email}}</h1>
 <h1>CEL, {{phone}}</h1> --}}
-
+{{!-- 
     <div>
         <h1>
-            Chat
+            Productos
         </h1>
         <div id="caja" class="caja">
 
@@ -17,6 +17,7 @@
 
 
 <form>
+  <h2> Agregar productos</h2>
   <div class="mb-3">
     <label for="name" class="form-label">Nombre</label>
     <input type="text" class="form-control" id="name" aria-describedby="emailHelp">
@@ -32,4 +33,31 @@
 {{!-- Configuro mi home para que se conecte con el servidor --}}
 <script src="/socket.io/socket.io.js"></script>
 {{!-- Indico donde va a estar la caerpeta de mi cliente --}}
-<script src="/public/js/index.js"></script>
+<script src="/public/js/index.js"></script> --}}
+{{!-- 
+<div>
+    <h1>Hola {{name}}, estos son todos los usuarios: </h1>
+    <!-- Podemos usar condicionales -->
+    {{#if IsAdmin}}
+    <!-- El interador Each me va a permitir recorrer todos los elementos de mi array -->
+    {{#each users}}
+    <div>
+        <p>{{this.name}} {{this.lastName}}</p>
+    </div>
+    <!-- Tengo que cerrar mi iterador cuando termine de usarlo-->
+    {{/each}}
+    {{else}}
+    <p>No tienes permiso para ingresar </p>
+    <!-- Tambien tenemos que cerrar le if cuando terminemos de usarlo -->
+    {{/if}}
+</div> --}}
+
+<div>
+  <h1>Hola {{name}}, estos son todos los productos: </h1>
+   {{#each users}}
+    <div>
+        <p>{{this.name}} {{this.lastName}}</p>
+    </div>
+    <!-- Tengo que cerrar mi iterador cuando termine de usarlo-->
+    {{/each}}
+</div>

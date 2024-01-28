@@ -32,6 +32,10 @@ const homeRouter = require('./routes/home.router.js')
 app.use('/home', homeRouter)
 
 
+const homeRouter = require('./routes/home.router.js')
+app.use('/home', homeRouter)
+
+
 //Para conectarme con el cliente
 const http =require('http')
 //Server http
