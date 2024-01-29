@@ -28,15 +28,10 @@ app.set('views', __dirname, '/views')
 
 //Me traigo mi router de home.router
 const homeRouter = require('./routes/home.router.js')
-//Inicializo mis rutas desde la carpeta principal para que las reconozca. El primer argumento va asobreponerse a todas als rutas que pertenecen a todas las rutas a las que quiera acceder
+//Inicializo mis rutas desde la carpeta principal para que las reconozca. El primer argumento va asobreponerse a todas las rutas que pertenecen a todas las rutas a las que quiera acceder
 app.use('/home', homeRouter)
 
-
-const homeRouter = require('./routes/home.router.js')
-app.use('/home', homeRouter)
-
-
-//Para conectarme con el cliente
+//Para conectarme con el cliente a traves de socket
 const http =require('http')
 //Server http
 const server = http.createServer(app)
