@@ -14,7 +14,7 @@ const PORT = 8080 || process.env.PORT
 const handlebars = require('express-handlebars')
 
 //Array para guardar mis mensajes
-let arrMessage = []
+let arrProd = []
 
 //Configurar carpeta estatica (publica)
 app.use(express.static(__dirname +'/public'))
@@ -43,10 +43,10 @@ io.on('conection', (socket)=>{
     //Para enviar mensajes desde el servidor que luego va a tener que escuchar mi cliente
     socket.emit('welcome', 'hola')
     //Para escuchar el mensaje que esta enviando el cliente
-    socket.on('new-messages', (data)=>{
-        arrMessage.push(data)
+    socket.on('new-product', (data)=>{
+        arrProd.push(data)
         //utilizo la propiedad sockets de io para conectarme a varios sockes a la vez y no solo al que estoy usando yo
-        io.sockets.emit('messages-all', arrMessage)
+        io.sockets.emit('products-all', arrProd)
     })
 })
 
