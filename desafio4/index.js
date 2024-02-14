@@ -16,6 +16,9 @@ const handlebars = require('express-handlebars')
 //Array para guardar mis mensajes
 let arrProd = []
 
+//Formateo de la data
+app.use(express.json())
+
 //Configurar carpeta estatica (publica)
 app.use(express.static(__dirname +'/public'))
 

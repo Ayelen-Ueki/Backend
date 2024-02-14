@@ -77,4 +77,16 @@ router.get('/allProducts', async (req, res)=>{
     }
 })
 
+router.post('/createProduct',async (req,res)=>{
+    try{
+        await Product.create(req.body)
+        res.status(201).send({
+            msg: "Producto creado", 
+            data: req.body
+        })
+    }catch(err){
+        console.log(err)
+    }
+})
+
 module.exports = router
