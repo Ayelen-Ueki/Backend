@@ -54,5 +54,7 @@ io.on('conection', (socket)=>{
 //Tengo que escuchar a mi servidor
 server.listen(PORT, () => {
     console.log(`Server on port ${PORT}`)
+    // Conectar con Mongoose (Base de datos)
+    Database.connect()
 })
 

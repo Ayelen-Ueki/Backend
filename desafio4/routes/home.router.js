@@ -63,5 +63,18 @@ router.get('/realtimeproducts', (req, res)=>{
     res.render('products', {})
 })
 
+const Product = require('../db/models/products.model')
+
+router.get('/allProducts', async (req, res)=>{
+    try {
+        let response = await Product.find()
+        res.send({
+            msg:'Productos encontrados', 
+            data: response
+        })
+    }catch(err){
+        console.log(err)
+    }
+})
 
 module.exports = router
