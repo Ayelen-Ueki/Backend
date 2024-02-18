@@ -6,7 +6,8 @@ const ProductSchema = new mongoose.Schema({
     name:{
         type: String,
         unique: true,
-        required: true
+        required: true,
+        index: true
     },
     price:{
         type:Number,
@@ -15,7 +16,8 @@ const ProductSchema = new mongoose.Schema({
     category:{
         type: String,
         require: true,
-        enum:[Tortas, Galles, Alfajores, Combos, Otros]
+        enum:[Tortas, Galles, Alfajores, Combos, Otros],
+        index: true
     },
     stock:{
         type: Number, 
@@ -23,5 +25,6 @@ const ProductSchema = new mongoose.Schema({
     }
 })
 
+//El primer argumento es el nombre de la colaccion en Mongo
 const Product = mongoose.model('products', ProductSchema)
 module.exports=Product
