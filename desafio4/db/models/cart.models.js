@@ -20,7 +20,7 @@ const CartSchema = new mongoose.Schema({
 })
 
 //se puede predefinir los populate para que se hagan automaticamente el findOne
-Cart.Sechema.pre('finfOne',()=>{
+Cart.Sechema.pre('find',function(){
     //hace referencia a la consulta del findOne
     this.populate('products.product')
 })

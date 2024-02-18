@@ -17,7 +17,7 @@ module.exports={
                 stock: 5
             })
             //Completar con el id de algun producto creado. Populate desglosa un objeto para que se vea mejor
-            let cart1 = await Cart.findOne({_id:''}).populate('products.product')
+            let cart1 = await Cart.find({_id:''}).populate('products.product')
             //'product' es lo que yo habia establecido que iba a ir dentro de cart en el modelo de cart.js
             //Pusheo el producto con su id
             cart1.products.push({product:''})
