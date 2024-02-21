@@ -1,6 +1,6 @@
 const { modelNames } = require("mongoose");
-
 const mongoose = required('mongoose');
+const mongoPaginate = require('mongoose-paginate-v2')
 
 const ProductSchema = new mongoose.Schema({
     name:{
@@ -24,6 +24,8 @@ const ProductSchema = new mongoose.Schema({
         default: 20
     }
 })
+
+ProductSchema.plugin(mongoPaginate)
 
 //El primer argumento es el nombre de la colaccion en Mongo
 const Product = mongoose.model('products', ProductSchema)
