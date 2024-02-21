@@ -45,6 +45,8 @@ module.exports={
                 }
 
             ])
+            //usamos Paginate para limitar la cantidad de datos que se muestran a la vez. limit: cuantos limites voy a tener por pagina. tambien puedo usar el otro objeto dentro de paginate para poner un filtro
+            let res = Product.paginate({category:'Tortas'},{limit:10})
 
         }).catch(()=>{
             console.log(err)
