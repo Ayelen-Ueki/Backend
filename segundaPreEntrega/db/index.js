@@ -6,7 +6,7 @@ const Product = require('./models/products.models');
 module.exports = {
     connect: async () => {
         try {
-            // Connect to MongoDB Atlas
+            // Conectar con MongoDB Atlas
             await mongoose.connect("mongodb+srv://ayeueki:proyectoBackend1@cluster0.bkssllr.mongodb.net/");
             console.log("Base de datos conectada");
 
