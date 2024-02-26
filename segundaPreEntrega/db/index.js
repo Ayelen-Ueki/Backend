@@ -1,55 +1,51 @@
 // Conectar Mongoose
 const mongoose = require('mongoose');
-const Cart = require('./models/cart.models')
-const Product = require('./models/products.models')
+const Cart = require('./models/cart.models');
+const Product = require('./models/products.models');
 
-module.exports={
-    connect:()=>{
-        return mongoose.connect("mongodb+srv://ayeueki:proyectoBackend1@cluster0.bkssllr.mongodb.net/")
-        .then(async()=>{
-            console.log("Base de datos conectada")
-            //creamos un carrito
-            Cart.create(data) 
-            Product.create({
-                name:'Torta de chocolate', 
-                price:7000, 
-                category:'Tortas', 
+module.exports = {
+    connect: async () => {
+        try {
+            // Connect to MongoDB Atlas
+            await mongoose.connect("mongodb+srv://ayeueki:proyectoBackend1@cluster0.bkssllr.mongodb.net/");
+            console.log("Base de datos conectada");
+
+            // Crear un carrito
+            const data = { data: "Datos de ejemplo" };
+            await Cart.create(data);
+
+            // Crear un producto de ejemplo
+            await Product.create({
+                name: 'Torta de chocolate',
+                price: 7000,
+                category: 'Tortas',
                 stock: 5
-            })
-            //Completar con el id de algun producto creado. Populate desglosa un objeto para que se vea mejor
-            let cart1 = await Cart.find({_id:''})//.populate('products.product')
-            //'product' es lo que yo habia establecido que iba a ir dentro de cart en el modelo de cart.js
-            //Pusheo el producto con su id
-            cart1.products.push({product:''})
-            //puedo actualizar carritos a partir del id deaseado
-            await Cart.updateOne({_id:''}, cart1)
+            });
 
-            let order = await Product.aggregate([
-                {//el valor de match es el filtro que quiero utilizar para matchear mis productos
-                    $match:{category:'Tortas'}
-                },
-                {//Con otro objeto podemos por ejemplo agrupar la data por nombre, y hacer que se sume la cantidad de cada uno de los elementos agrupados
-                    $group:{_id:'$name', totalQty: {$sum: '$quantity'}}
-                },
-                {//1 es en order ascendente y -1 es en orden descendente
-                    $sort:{totalAty:-1}
-                },
-                {//para pushear la informacion
-                    $group:{_id:1, orders:{$push: '$$PORT'}}
-                },
-                {//para crear un proyecto en un formato valido. Porque para agrupar si o si necesitamos crear un nuevo Id, project elimina ese Id que no necesitamos
-                    $project:{_id:0, orders:'$orders'}
-                },
-                {//con merge creamos una nueva coleccion en este caso de nombre "reports", aca vamos a guardar nuestro proyecto final que pusheamos en el paso anterior
-                    $merge:{'into':reports}
-                }
+            // Encontrar un carrito por su ID y agregar un producto
+            const cartId = '5fc2a79e902fe04b6c877e28'; // ID del carrito existente
+            const productId = '5fc2a83e902fe04b6c877e29'; // ID del producto creado
+            let cart = await Cart.findById(cartId);
+            cart.products.push({ product: productId });
+            await cart.save();
 
-            ])
-            //usamos Paginate para limitar la cantidad de datos que se muestran a la vez. limit: cuantos limites voy a tener por pagina. tambien puedo usar el otro objeto dentro de paginate para poner un filtro
-            let res = Product.paginate({category:'Tortas'},{limit:10})
+            // Agregar una orden agregada de productos a un nuevo informe
+            const order = await Product.aggregate([
+                { $match: { category: 'Tortas' } },
+                { $group: { _id: '$name', totalQty: { $sum: '$quantity' } } },
+                { $sort: { totalQty: -1 } },
+                { $group: { _id: 1, orders: { $push: '$$ROOT' } } },
+                { $project: { _id: 0, orders: 1 } },
+                { $merge: { into: 'reports' } }
+            ]);
 
-        }).catch(()=>{
-            console.log(err)
-        })
+            // Usar Paginate para limitar y paginar los resultados de la consulta
+            const options = { page: 1, limit: 10 }; // Limitar a 10 productos por página
+            const query = { category: 'Tortas' }; // Filtro por categoría
+            const result = await Product.paginate(query, options);
+            console.log(result);
+        } catch (error) {
+            console.error("Error al conectar con la base de datos:", error);
+        }
     }
-}
+};
