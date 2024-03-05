@@ -1,147 +1,62 @@
-import { Express } from "express";
-import routerProd from './routes.js';
+import express from 'express';
+import cookieParser from 'cookie-parser';
+import session from 'express-session';
+import MongoStore from 'connect-mongo';
 import path from 'path';
-import {__dirname} from './paths.js ';
+import handlebars from 'express-handlebars';
+import http from 'http';
+import { Server } from 'socket.io';
+import { connect as DatabaseConnect } from './database.js';
+import homeRouter from './routes/home.router.js';
 
+const app = express();
+const server = http.createServer(app);
+const io = new Server(server);
+const PORT = process.env.PORT || 8080;
+const arrProd = [];
 
-//Activo y pongo en funcionamiento express
-const express = require('express')
-const cookieParser = require('cookie-parser')
-const app = express()
-//Guardamos el puerto en el que vamos a trabajar en una constante, ya sea el 8080 que es nuestro server local o cualquiera que se le asigen a la app para trabajar (esto se hace con process)
-const PORT = 8080 || process.env.PORT    
-
-// Para que express reconozca handlebars
-const handlebars = require('express-handlebars')
-
-//Para decirle a mi configuracion de session que guarde la info. en un archivo
-const session = require('express-session ')
-const FileStore = require ('session-file-store')(session)
-
-//Para guardar sesiones
-const MongoStore = require('connect-mongo')
-//Array para guardar mis mensajes
-let arrProd = []
-
-//Para utilizar cookie parser. el argumento que recibe el Cookie Parser es el key para poder encriptar la cookie
-app.use(cookieParser('coderSecret'))
-//para crear la cookie
-app.get('/setCookie', (req,res)=>{
-    //la cookie a este punto va a mostrar mi info. en el navegador una vez creada. Con Max age se confirgura el tiempo maximo de vida de la cookie, una vez finalizado se elimina (5000: son milisegundos). En el objeto de configuracion puedo habilitar la firma que me va a permitir setear el 'secreto' de la cookie para que solo pueda pueda acceder a ella
-    res.cookie('CoderCookie',{user:'ayeueki@gmail.com'},{maxAge:5000,signed:true}).send('Cookie creada')
-})
-//Para acceder a la cookie
-app.get('/getCookie', (req,res)=>{
-    res.send(req.cookies)
-})
-//para acceder a cookies firmadas
-app.get('/getCookie', (req,res)=>{
-    res.send(req.signedCookies)
-})
-//Para borrar la cookiea partir de su nombre
-app.get('/deleteCookie', (req,res)=>{
-    res.clearCookie('CoderCookie').send('Cookie borrada')
-})
-
-//iniciando sesision-express para trabajar con sesiones
+// Middleware
+app.use(express.json());
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(cookieParser('coderSecret'));
 app.use(session({
-    //Path es el lugar donde va a quedar guardado mi file
-    //store:new FileStore({path:'./session'}),
+    secret: 'coderSecret',
+    resave: true,
+    saveUninitialized: true,
     store: MongoStore.create({
-        mongoUrl:'mongodb+srv://ayeueki:proyectoBackend1@proyectocoder.rxamsht.mongodb.net/'
-    }),
-    secret:'coderSecret',
-    resave:true,
-    saveUninitialized: true 
-}))
-
-app.get('/setSession',(req, res)=>{
-    //Podemos darle propiedades a las sesiones y setearlas
-    req.session.user = 'userName'
-    req.session.admin = true
-    req.send('User loggeado')
-})
-
-app.get('/getSession',(req, res)=>{
-    //Para obtener la session
-    req.send(req.session)
-})
-
-//Para borrar una session
-app.get('/logout',(req, res)=>{
-    req.session.destroy((err)=>{
-        if(err) res.send('Log out error')
-        res.send('Usuario cerrado')
+        mongoUrl: 'mongodb+srv://ayeueki:proyectoBackend1@proyectocoder.rxamsht.mongodb.net/'
     })
-})
+}));
 
-//para bloquear la session a usuarion no loaggeados usamos un middleware
-function auth(req, res, next){
-    if(req.session.user = 'ayelen' && req.session.admin){
-        return next()
+// Configuración de Handlebars
+app.engine('handlebars', handlebars());
+app.set('view engine', 'handlebars');
+app.set('views', path.join(__dirname, 'views'));
+
+// Rutas
+app.use('/home', homeRouter);
+
+// Manejo de Socket.IO
+io.on('connection', (socket) => {
+    socket.emit('welcome', 'hola');
+
+    socket.on('new-product', (data) => {
+        arrProd.push(data);
+        io.sockets.emit('products-all', arrProd);
+    });
+});
+
+// Conexión al Servidor y Base de Datos
+server.listen(PORT, async () => {
+    console.log(`Server on port ${PORT}`);
+    try {
+        await DatabaseConnect();
+        console.log("Base de datos conectada");
+
+        // Crear carrito y producto (ejemplo)
+        // Cart.create(data);
+        // Product.create({ name: 'Torta de chocolate', price: 7000, category: 'Tortas', stock: 5 });
+    } catch (err) {
+        console.error("Error al conectar a la base de datos:", err);
     }
-    return  res.send('Error en la autenticacion, usuario no autorizado')
-    }
-
-//Para hacer login
-app.get('/login',(req, res)=>{
-    let {username, password} = req.query
-    if(username != 'ayelen' || password != 'micontrasena'){
-        return res.send('usuario o password incorrectos')
-    }
-    req.session.user = username
-    req.session.admin = true
-
-    res.send('Usuarion loggeado')
-})
-
-app.get('/profile',auth, (req,res)=>{
-    res.send('Usuarion loggeado exitosamente')
-})
-
-
-//Formateo de la data
-app.use(express.json())
-
-//Configurar carpeta estatica (publica)
-app.use(express.static(__dirname +'/public'))
-
-//Para inicializar handlebars dentro de mi aplicacion (configurar el motor de plantilla)
-app.engine('handlebars', handlebars.engine())
-//Para habilitar handlebrs para las siguientes views
-app.set('view engine', 'handlebars')
-//Para que express reconozca la carpeta views
-app.set('views', __dirname, '/views')
-
-//Me traigo mi router de home.router
-const homeRouter = require('./routes/home.router.js')
-//Inicializo mis rutas desde la carpeta principal para que las reconozca. El primer argumento va asobreponerse a todas las rutas que pertenecen a todas las rutas a las que quiera acceder
-app.use('/home', homeRouter)
-
-//Para conectarme con el cliente a traves de socket
-const http =require('http')
-//Server http
-const server = http.createServer(app)
-//Para inicializar el server
-const {Server} = require('socket.io')
-const io = new Server(server)
-//Para escuchar la conexion
-io.on('conection', (socket)=>{
-    //Para enviar mensajes desde el servidor que luego va a tener que escuchar mi cliente
-    socket.emit('welcome', 'hola')
-    //Para escuchar el mensaje que esta enviando el cliente
-    socket.on('new-product', (data)=>{
-        arrProd.push(data)
-        //utilizo la propiedad sockets de io para conectarme a varios sockes a la vez y no solo al que estoy usando yo
-        io.sockets.emit('products-all', arrProd)
-    })
-})
-
-
-//Tengo que escuchar a mi servidor
-server.listen(PORT, () => {
-    console.log(`Server on port ${PORT}`)
-    // Conectar con Mongoose (Base de datos)
-    Database.connect()
-})
-
+});
