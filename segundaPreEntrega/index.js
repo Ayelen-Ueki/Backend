@@ -1,6 +1,6 @@
 import { Express } from "express";
 import routerProd from './routes.js';
-import path from 'path'
+import path from 'path';
 import {__dirname} from './paths.js ';
 
 
@@ -14,6 +14,12 @@ const PORT = 8080 || process.env.PORT
 // Para que express reconozca handlebars
 const handlebars = require('express-handlebars')
 
+//Para decirle a mi configuracion de session que guarde la info. en un archivo
+const session = require('express-session ')
+const FileStore = require ('session-file-store')(session)
+
+//Para guardar sesiones
+const MongoStore = require('connect-mongo')
 //Array para guardar mis mensajes
 let arrProd = []
 
@@ -39,6 +45,11 @@ app.get('/deleteCookie', (req,res)=>{
 
 //iniciando sesision-express para trabajar con sesiones
 app.use(session({
+    //Path es el lugar donde va a quedar guardado mi file
+    //store:new FileStore({path:'./session'}),
+    store: MongoStore.create({
+        mongoUrl:'mongodb+srv://ayeueki:proyectoBackend1@proyectocoder.rxamsht.mongodb.net/'
+    }),
     secret:'coderSecret',
     resave:true,
     saveUninitialized: true 
