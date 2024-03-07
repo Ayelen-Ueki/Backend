@@ -1,3 +1,5 @@
+const router = require("./views.routes")
+
 //funcion Register 
 let users=[]
 router.post('/register', (req, res)=>{
@@ -21,6 +23,13 @@ router.post('/login', (req, res)=>{
         return
     }
     res.send("Usuario o contraseña incorrectos")
+})
+
+router.get('/logout', (req,res)=>{
+    req.session.destroy(err=>{
+        if(err)res.send('Error en logout')
+    })
+    res.redirect('/views/login-view')
 })
 
 router.get('/user', (req,res)=>{
