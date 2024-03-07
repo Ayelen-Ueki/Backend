@@ -7,7 +7,8 @@ import handlebars from 'express-handlebars';
 import http from 'http';
 import { Server } from 'socket.io';
 import { connect as DatabaseConnect } from './database.js';
-import homeRouter from './routes/home.router.js';
+import viewsRouter from './routes/views.routes.js';
+import authRouter from './routes/auth.routes.js';
 
 const app = express();
 const server = http.createServer(app);
@@ -17,6 +18,7 @@ const arrProd = [];
 
 // Middleware
 app.use(express.json());
+app.use(express.urlencoded({extended:false}))
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cookieParser('coderSecret'));
 app.use(session({
@@ -34,7 +36,8 @@ app.set('view engine', 'handlebars');
 app.set('views', path.join(__dirname, 'views'));
 
 // Rutas
-app.use('/home', homeRouter);
+app.use('/views', viewsRouter);
+app.use('/auth', authRouter);
 
 // Manejo de Socket.IO
 io.on('connection', (socket) => {
@@ -60,3 +63,4 @@ server.listen(PORT, async () => {
         console.error("Error al conectar a la base de datos:", err);
     }
 });
+
