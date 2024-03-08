@@ -28,7 +28,7 @@ router.post('/login', (req, res) => {
         req.session.password = newUser.password;
         req.session.role = userFound.role; // Set the role from the user found
 
-        res.redirect('/views/profile-view');
+        res.redirect('/home/allProducts');
         return;
     }
     res.send("Usuario o contraseña incorrectos");

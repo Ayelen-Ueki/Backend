@@ -36,6 +36,7 @@ app.set('view engine', 'handlebars');
 app.set('views', path.join(__dirname, 'views'));
 
 // Rutas
+app.use('/home', homeRouter);
 app.use('/views', viewsRouter);
 app.use('/auth', authRouter);
 
