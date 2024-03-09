@@ -1,31 +1,31 @@
 const { modelNames } = require("mongoose");
 const mongoose = required('mongoose');
-const mongoPaginate = require('mongoose-paginate-v2')
 
 const ProductSchema = new mongoose.Schema({
-    name:{
+    email:{
         type: String,
-        unique: true,
-        required: true,
-        index: true
-    },
-    price:{
-        type:Number,
+        unique:true,
         required: true
     },
-    category:{
+    name:{
         type: String,
         required: true,
-        enum:[Tortas, Galles, Alfajores, Combos, Otros],
+    },
+    lastname:{
+        type:String,
+        required: true,
         index: true
     },
-    stock:{
+    password:{
+        type: String,
+        required: true,
+    },
+    tel:{
         type: Number, 
-        default: 20
+        required: true,
     }
 })
 
-ProductSchema.plugin(mongoPaginate)
 
 //El primer argumento es el nombre de la colaccion en Mongo
 const Product = mongoose.model('products', ProductSchema)

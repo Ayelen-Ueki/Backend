@@ -15,14 +15,21 @@ const server = http.createServer(app);
 const io = new Server(server);
 const PORT = process.env.PORT || 8080;
 const arrProd = [];
+const db = require ('./routes/index.js')
+const passport = require ('passport')
+const initializaePassport = require ('./passport/passport.js')
 const useRouter = require('./routes/index.js')
 
+//ejecutamos el file de passport luego de importarlo aca
+initializaePassport()
 
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({extended:false}))
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cookieParser('coderSecret'));
+--//Inicializamos passport
+app.use(passport.initialize);
 app.use(session({
     secret: 'coderSecret',
     resave: true,
