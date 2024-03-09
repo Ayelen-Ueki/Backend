@@ -40,5 +40,14 @@ const initializaePassport = () =>{
 
         }
     ))
+    //Para hacer una encriptacion adicional la sesion
+    passport.serializeUser((user,done)=>{
+        done(null, user._id)
+    })
+    //Para desencriptarlo
+    passport.deserializeUser((id,done)=>{
+        let user = userModel.findbyId(id)
+        done(null,user)
+    })
 }
 

@@ -16,6 +16,7 @@ const io = new Server(server);
 const PORT = process.env.PORT || 8080;
 const arrProd = [];
 const db = require ('./routes/index.js')
+const MongoStore = require('connect-mongo')
 const passport = require ('passport')
 const initializaePassport = require ('./passport/passport.js')
 const useRouter = require('./routes/index.js')
@@ -30,6 +31,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(cookieParser('coderSecret'));
 --//Inicializamos passport
 app.use(passport.initialize);
+app.use(passport.session())
 app.use(session({
     secret: 'coderSecret',
     resave: true,
