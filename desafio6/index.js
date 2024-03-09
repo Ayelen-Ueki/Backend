@@ -15,7 +15,8 @@ const server = http.createServer(app);
 const io = new Server(server);
 const PORT = process.env.PORT || 8080;
 const arrProd = [];
-const bcrypt = require('bcrypt')
+const useRouter = require('./routes/index.js')
+
 
 // Middleware
 app.use(express.json());
@@ -41,12 +42,7 @@ app.use('/home', homeRouter);
 app.use('/views', viewsRouter);
 app.use('/auth', authRouter);
 
-//Para encriptar contraseñas. La pass en este caso es 123456
-let password = bcrypt.hashSync('123456', bcrypt.genSaltSync(10))
-console.log(password)
 
-//Para poder desencriptar las pass y utilizarla en mi codigo
-bcrypt.compareSync('123456', 'password encriptada')
 
 // Manejo de Socket.IO
 io.on('connection', (socket) => {
