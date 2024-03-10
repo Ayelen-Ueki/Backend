@@ -9,6 +9,9 @@ import { Server } from 'socket.io';
 import { connect as DatabaseConnect } from './database.js';
 import viewsRouter from './routes/views.routes.js';
 import authRouter from './routes/auth.routes.js';
+import { initPassport } from './passport/passport.js';
+import passport from 'passport';
+import {router as sessionRouter} from './routes/sessions.router.js'
 
 const app = express();
 const server = http.createServer(app);
@@ -22,7 +25,8 @@ const initializaePassport = require ('./passport/passport.js')
 const useRouter = require('./routes/index.js')
 
 //ejecutamos el file de passport luego de importarlo aca
-initializaePassport()
+// initializaePassport()
+initPassport()
 
 // Middleware
 app.use(express.json());
@@ -32,6 +36,7 @@ app.use(cookieParser('coderSecret'));
 --//Inicializamos passport
 app.use(passport.initialize);
 app.use(passport.session())
+app.use('/api/sessions', sessionRouter)
 app.use(session({
     secret: 'coderSecret',
     resave: true,
