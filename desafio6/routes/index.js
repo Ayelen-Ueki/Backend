@@ -30,9 +30,10 @@ router.post('/login',(req,res)=>{
        res.send('Usuario logueado correctamente')
     let token = generaToken(userFound)
     }
-    return res.status(200).json{
+    return res.status(200).json({
+        //Este token sirve para identificar si alguien estuvo modificando datos del cliente o no --> podemos confirmarlo en la pag de JWT 
         newUser: userFound, token
-    }
+    })
 })
 
 router.get('/allUsers', (req,res)=>{
