@@ -1,5 +1,6 @@
 import passport from 'passport';
 import github from 'passport'
+import usuariosModelo from '../db/models/user.model';
 
 const passport = require('passport')
 const LocalStrategy = require('passport-local').Strategy
@@ -68,7 +69,17 @@ export const initPassport = () => {
         //Dicha funcion tiene que tener los siguientes argumentos
         async(accessToken, refreshToken, profile, done) => {
             try { //logica de registro/ login
-
+                //el name y el email del usuario los voy a estar tomando de su login en Github --> estan incluidos en _json
+                let{name, email} = profile._json
+                //chequear si el usuario ya esta registrado o no chequeando sus datos contra mi modelo de usuario en la base de datos don de estan guardados todos los usuarios registrados
+                let usuario = await usuariosModelo.findOne({email})
+                return done (null, usuario)
+                //Si no se encuentra el usuario va a registrarlo y guardar su perfil de github
+                if(!usuario){
+                    usuario = await usuariosModelo.create({
+                        nombre: name, email, github:profile
+                    })
+                }
             }catch(error){
                 return done(error)
             }

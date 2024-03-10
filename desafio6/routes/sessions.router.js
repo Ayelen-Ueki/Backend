@@ -9,6 +9,10 @@ router.get('/',passport.authenticate('github',{}), (req, res) =>{
 })
 
 router.get('/callbackGithub', passport.authenticate('github',{}),(req,res)=>{
+    
+    //para grabar en la req de mi session los datos del user
+    req.session.usuario=req.user
+    
     res.setHeader('Content-Type', 'application/json');
-    return res.status(200).json({payload:'ok'});
+    return res.status(200).json({payload:req.user});
 })

@@ -1,7 +1,7 @@
 const { modelNames } = require("mongoose");
 const mongoose = required('mongoose');
 
-const ProductSchema = new mongoose.Schema({
+const usuariosSchema = mongoose.model('usuarios', new mongoose.Schema({
     email:{
         type: String,
         unique:true,
@@ -24,9 +24,13 @@ const ProductSchema = new mongoose.Schema({
         type: Number, 
         required: true,
     }
+},
+{
+    timestamps:true,
+    strict:false
 })
-
+)
 
 //El primer argumento es el nombre de la colaccion en Mongo
-const Product = mongoose.model('products', ProductSchema)
-module.exports=Product
+const usuariosModelo = mongoose.model('usuario', usuariosSchema)
+module.exports=usuariosModelo
