@@ -13,6 +13,11 @@ import { initPassport } from './passport/passport.js';
 import passport from 'passport';
 import {router as sessionRouter} from './routes/sessions.router.js'
 
+//Implementando Json Web Token
+import { Jwt } from 'jsonwebtoken';
+const secret_key = "ClaveCoder"
+export const generaToken = (usuario) =>jwt.sign(usuario,secret_key,{expiresIn: 60})
+
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);

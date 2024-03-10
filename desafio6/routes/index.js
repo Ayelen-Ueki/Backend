@@ -5,6 +5,7 @@ const {Router} = express
 const router = new Router()
 const users = []
 const passport = require ('passport')
+import { generaToken } from '../index'
 
 //Agregamos un middleware en Register utilizando una propiedad de passport que require el nombre de la estrategia que usamos antes en el file de passport.jsz
 router.post('/register',passport.authenticate('register',{failureRedirect:'/user/failedRegister'}),(req,res)=>{
@@ -27,8 +28,11 @@ router.post('/login',(req,res)=>{
     if(userFound){
        if(!isValidatePassword(userFound, newUser.password)) res.send('usuario Inc$ npm install passport-localorrecto') 
        res.send('Usuario logueado correctamente')
+    let token = generaToken(userFound)
     }
-    res.send('Usuario no encontrado')
+    return res.status(200).json{
+        newUser: userFound, token
+    }
 })
 
 router.get('/allUsers', (req,res)=>{
