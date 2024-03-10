@@ -17,6 +17,7 @@ import {router as sessionRouter} from './routes/sessions.router.js'
 import { Jwt } from 'jsonwebtoken';
 const secret_key = "ClaveCoder"
 export const generaToken = (usuario) =>jwt.sign(usuario,secret_key,{expiresIn: 60})
+export const validaToken = (token) => jwt.verify(token, secret_key)
 
 const app = express();
 const server = http.createServer(app);
