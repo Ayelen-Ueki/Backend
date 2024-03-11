@@ -4,6 +4,8 @@ import usuariosModelo from '../db/models/user.model';
 
 const passport = require('passport')
 const LocalStrategy = require('passport-local').Strategy
+const jwtStrategy = require('passport-jwt').Strategy
+const ExtractJWT = require('passport-jwt').ExtractJwt
 const userModel = require('../db/models/user.model')
 const{createHash,isValidatePassword}=require('../utils/bcryps')
 
@@ -57,41 +59,58 @@ const{createHash,isValidatePassword}=require('../utils/bcryps')
 
 
 //Inicializar passport cuando quiero utulizar github para loggearme
-export const initPassport = () => {
-    //Para usarla primero tengo que nombrar la estrategia que estoy usando y luego la estrategia
-    passport.use('github', new github.Strategy) (
-        //argumentos de las  estrategias, 1 objeto para configurar la estrategia y 1 funcion con una firma relacionada con la estrategia
-        { //Datos tomados de la app que creamos en GitHub
-            clientId: 'Iv1.46ba0dbadbfd1c93',
-            clientSecret:'0bae53b354208e4fb6fe1f80a4801d4b692b6d56',
-            callbackURL:'http://localhost:3000/api/sessions/callback/Github'
-        },
-        //Dicha funcion tiene que tener los siguientes argumentos
-        async(accessToken, refreshToken, profile, done) => {
-            try { //logica de registro/ login
-                //el name y el email del usuario los voy a estar tomando de su login en Github --> estan incluidos en _json
-                let{name, email} = profile._json
-                //chequear si el usuario ya esta registrado o no chequeando sus datos contra mi modelo de usuario en la base de datos don de estan guardados todos los usuarios registrados
-                let usuario = await usuariosModelo.findOne({email})
-                return done (null, usuario)
-                //Si no se encuentra el usuario va a registrarlo y guardar su perfil de github
-                if(!usuario){
-                    usuario = await usuariosModelo.create({
-                        nombre: name, email, github:profile
-                    })
-                }
-            }catch(error){
-                return done(error)
-            }
+// export const initPassport = () => {
+//     Para usarla primero tengo que nombrar la estrategia que estoy usando y luego la estrategia
+//     passport.use('github', new github.Strategy) (
+//         argumentos de las  estrategias, 1 objeto para configurar la estrategia y 1 funcion con una firma relacionada con la estrategia
+//         { //Datos tomados de la app que creamos en GitHub
+//             clientId: 'Iv1.46ba0dbadbfd1c93',
+//             clientSecret:'0bae53b354208e4fb6fe1f80a4801d4b692b6d56',
+//             callbackURL:'http://localhost:3000/api/sessions/callback/Github'
+//         },
+//         Dicha funcion tiene que tener los siguientes argumentos
+//         async(accessToken, refreshToken, profile, done) => {
+//             try { //logica de registro/ login
+//                 el name y el email del usuario los voy a estar tomando de su login en Github --> estan incluidos en _json
+//                 let{name, email} = profile._json
+//                 chequear si el usuario ya esta registrado o no chequeando sus datos contra mi modelo de usuario en la base de datos don de estan guardados todos los usuarios registrados
+//                 let usuario = await usuariosModelo.findOne({email})
+//                 return done (null, usuario)
+//                 Si no se encuentra el usuario va a registrarlo y guardar su perfil de github
+//                 if(!usuario){
+//                     usuario = await usuariosModelo.create({
+//                         nombre: name, email, github:profile
+//                     })
+//                 }
+//             }catch(error){
+//                 return done(error)
+//             }
+//         }
+//     )
+// }
+
+// si usamos sessions, en ese caso estoy guardando el usuario completo suponinedo que no sea muy grande
+// passport.serializeUser((usuario, done) => {
+//     done(null, usuario)
+// })
+
+// passport.deserializeUser((usuario, done) => {
+//     done(null, usuario)
+// })
+
+const initializaePassport = () =>{
+    //Nombrar la strategy
+    passport.use('jwt', new jwtStrategy({
+        //Desde donde voy a traer la cookie?
+        jwtFromRequest: ExtractJWT.fromExtractors([cookieExtractor]), 
+        
+        //Es el secreto que creamos en el index de routes
+        secretOrKey: 'coderSecret'
+    }, async(jwt_payload, done)=>{
+        try{
+            return done(null, jwt_payload)
+        } catch(error){
+            return done('Error en jwt passport', error)
         }
-    )
+    }))
 }
-
-//si usamos sessions, en ese caso estoy guardando el usuario completo suponinedo que no sea muy grande
-passport.serializeUser((usuario, done) => {
-    done(null, usuario)
-})
-
-passport.deserializeUser((usuario, done) => {
-    done(null, usuario)
-})

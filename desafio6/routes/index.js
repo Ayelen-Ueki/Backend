@@ -45,7 +45,7 @@ router.post('/login',(req,res)=>{
             'coderSecret', //Es el codigo que le vamos a dar al usuario si tiene acceso para poder ingresar
             {expiresIn:'24h'} //Para que expire en 24hs
         )
-            res.cookie(cookieToken, token).send({message:'User logueado'})
+            res.cookie(cookieToken, token, {httpOnly:true}).send({message:'User logueado'})
             res.send({message:'User logueado',token})
     }
 })
