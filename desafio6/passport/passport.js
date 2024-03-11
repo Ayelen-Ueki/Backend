@@ -98,7 +98,7 @@ const{createHash,isValidatePassword}=require('../utils/bcryps')
 //     done(null, usuario)
 // })
 
-const initializaePassport = () =>{
+const initializePassport = () =>{
     //Nombrar la strategy
     passport.use('jwt', new jwtStrategy({
         //Desde donde voy a traer la cookie?
@@ -114,11 +114,16 @@ const initializaePassport = () =>{
         }
     }))
 
-    var cookieExtractor = function(req){
-        var token = null;
-        if(req && req.cookies) {
-            token = req.cookie['jwt'];
-        }
-        return token;
-    }
+    
 }
+
+const cookieExtractor = function(req){
+    let token = null;
+    if(req && req.cookies) {
+        token = req.cookie['jwt'];
+    }
+    return token;
+}
+
+//Vamos a usar esta funcion como middle ware para las funciones que consideremos que deberian estar protegidas
+module.exports = {initializePassport}

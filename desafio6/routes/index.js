@@ -50,7 +50,8 @@ router.post('/login',(req,res)=>{
     }
 })
 
-router.get('/allUsers', (req,res)=>{
+//Para usar la doble autenticacion con jwt con la estrategia que creamos en passport
+router.get('/allUsers',passport.authenticate('jwt', {session:false}), (req,res)=>{
     req.send(users)
 })
 
