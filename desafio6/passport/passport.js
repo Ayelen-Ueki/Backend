@@ -113,4 +113,12 @@ const initializaePassport = () =>{
             return done('Error en jwt passport', error)
         }
     }))
+
+    var cookieExtractor = function(req){
+        var token = null;
+        if(req && req.cookies) {
+            token = req.cookie['jwt'];
+        }
+        return token;
+    }
 }
