@@ -29,6 +29,7 @@ const MongoStore = require('connect-mongo')
 const passport = require ('passport')
 const initializaePassport = require ('./passport/passport.js')
 const useRouter = require('./routes/index.js')
+const cookieParser = require('cookie-parser')
 
 //ejecutamos el file de passport luego de importarlo aca
 // initializaePassport()
