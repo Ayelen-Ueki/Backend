@@ -5,17 +5,19 @@ const {Router} = express
 const router = new Router()
 const users = []
 const passport = require ('passport')
+const jwt = require('jsonwebtoken')
 import { generaToken } from '../index'
+
 
 //Agregamos un middleware en Register utilizando una propiedad de passport que require el nombre de la estrategia que usamos antes en el file de passport.jsz
 router.post('/register',passport.authenticate('register',{failureRedirect:'/user/failedRegister'}),(req,res)=>{
     res.send('Usuario registrado correctamente')
-    // let newUser = req.body
-    // newUser.id = Math.random()
-    // Para guardar la password encriptada en mi base de datos
-    // newUser.password = createHash(userNew.password)
-    // users.push(newUser)
-    // res.send("User guardado correctamente")
+    let newUser = req.body
+    newUser.id = Math.random()
+    //Para guardar la password encriptada en mi base de datos
+    newUser.password = createHash(userNew.password)
+    users.push(newUser)
+    res.send("User guardado correctamente")
 })
 
 router.post('/login',(req,res)=>{
@@ -34,6 +36,17 @@ router.post('/login',(req,res)=>{
         //Este token sirve para identificar si alguien estuvo modificando datos del cliente o no --> podemos confirmarlo en la pag de JWT 
         newUser: userFound, token
     })
+
+    //Agregando doble proteccion con cookies
+    if(req.body.username == 'ayeueki@gmail.com'&& req.body.password== '123456'){
+        //Si se cumplen estas condiciones vamos a darle acceso al usuario a un token
+        jwt.sign(
+            {email: req.body.username, password: req.body.password, role:'admin'}, 
+            'coderSecret', //Es el codigo que le vamos a dar al usuario si tiene acceso para poder ingresar
+            {expiresIn:'24h'} //Para que expire en 24hs
+        )
+
+    }
 })
 
 router.get('/allUsers', (req,res)=>{
