@@ -125,5 +125,15 @@ const cookieExtractor = function(req){
     return token;
 }
 
+//Funcion para dar otro nivel de autorizacion (por ejemplo dependiendo del rol de la persona). Esta funcion va a devolver un middleware
+const authorization = () => {
+    return (req, res, next) => {
+        if(!req.user) return res.status(401).send({error: 'Unauthorized'})
+        if(req.user.role != 'admin') return  res.status(403).send({error: 'No permission'})
+
+        next()
+    }
+}
+
 //Vamos a usar esta funcion como middle ware para las funciones que consideremos que deberian estar protegidas
-module.exports = {initializePassport}
+module.exports = {initializePassport, authorization}

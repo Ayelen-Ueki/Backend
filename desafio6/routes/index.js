@@ -6,6 +6,7 @@ const router = new Router()
 const users = []
 const passport = require ('passport')
 const jwt = require('jsonwebtoken')
+const {authorization} = require ('../passport/passport')
 import { generaToken } from '../index'
 
 
@@ -51,7 +52,7 @@ router.post('/login',(req,res)=>{
 })
 
 //Para usar la doble autenticacion con jwt con la estrategia que creamos en passport
-router.get('/allUsers',passport.authenticate('jwt', {session:false}), (req,res)=>{
+router.get('/allUsers',passport.authenticate('jwt', {session:false}),authorization, (req,res)=>{
     req.send(users)
 })
 
