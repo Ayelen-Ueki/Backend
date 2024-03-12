@@ -98,42 +98,36 @@ const{createHash,isValidatePassword}=require('../utils/bcryps')
 //     done(null, usuario)
 // })
 
-const initializePassport = () =>{
-    //Nombrar la strategy
+const initializePassport = () => {
     passport.use('jwt', new jwtStrategy({
-        //Desde donde voy a traer la cookie?
-        jwtFromRequest: ExtractJWT.fromExtractors([cookieExtractor]), 
-        
-        //Es el secreto que creamos en el index de routes
+        jwtFromRequest: ExtractJWT.fromExtractors([cookieExtractor]),
         secretOrKey: 'coderSecret'
-    }, async(jwt_payload, done)=>{
-        try{
-            return done(null, jwt_payload)
-        } catch(error){
-            return done('Error en jwt passport', error)
+    }, async (jwt_payload, done) => {
+        try {
+            return done(null, jwt_payload);
+        } catch (error) {
+            return done('Error en JWT passport', error);
         }
-    }))
+    }));
+};
 
-    
-}
-
-const cookieExtractor = function(req){
+const cookieExtractor = function (req) {
     let token = null;
-    if(req && req.cookies) {
-        token = req.cookie['jwt'];
+    if (req && req.cookies) {
+        token = req.cookies['jwt'];
     }
     return token;
-}
+};
 
 //Funcion para dar otro nivel de autorizacion (por ejemplo dependiendo del rol de la persona). Esta funcion va a devolver un middleware
 const authorization = () => {
     return (req, res, next) => {
-        if(!req.user) return res.status(401).send({error: 'Unauthorized'})
-        if(req.user.role != 'admin') return  res.status(403).send({error: 'No permission'})
+        if (!req.user) return res.status(401).send({ error: 'Unauthorized' });
+        if (req.user.role !== 'admin') return res.status(403).send({ error: 'No tiene permiso' });
+        next();
+    };
+};
 
-        next()
-    }
-}
 
 //Vamos a usar esta funcion como middle ware para las funciones que consideremos que deberian estar protegidas
 module.exports = {initializePassport, authorization}

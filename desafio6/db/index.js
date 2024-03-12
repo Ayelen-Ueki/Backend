@@ -6,32 +6,33 @@ const Product = require('./models/products.models');
 module.exports = {
     connect: async () => {
         try {
-            // Conectar con MongoDB Atlas
+            // Conectar a MongoDB Atlas
             await mongoose.connect("mongodb+srv://ayeueki:proyectoBackend1@cluster0.bkssllr.mongodb.net/");
-            console.log("Base de datos conectada");
+            console.log("Database conectada exitosamente");
 
             // Crear un carrito
-            const data = { data: "Datos de ejemplo" };
-            await Cart.create(data);
+            const cartData = { data: "Data" };
+            await Cart.create(cartData);
 
-            // Crear un producto de ejemplo
-            await Product.create({
+            // Ejemplo de producto
+            const productData = {
                 name: 'Torta de chocolate',
                 price: 7000,
                 category: 'Tortas',
                 stock: 5
-            });
+            };
+            const newProduct = await Product.create(productData);
 
-            // Encontrar un carrito por su ID y agregar un producto
-            const cartId = '5fc2a79e902fe04b6c877e28'; // ID del carrito existente
-            const productId = '5fc2a83e902fe04b6c877e29'; // ID del producto creado
+            // Encontrar carrito por id y agregar producto
+            const cartId = '5fc2a79e902fe04b6c877e28'; // ID existente
+            const productId = newProduct._id; // ID del nuevo producto
             let cart = await Cart.findById(cartId);
             cart.products.push({ product: productId });
             await cart.save();
 
-            // Agregar una orden agregada de productos a un nuevo informe
+            // Aggregation de productos por id
             const order = await Product.aggregate([
-                { $match: { category: 'Tortas' } },
+                { $match: { category: 'Cakes' } },
                 { $group: { _id: '$name', totalQty: { $sum: '$quantity' } } },
                 { $sort: { totalQty: -1 } },
                 { $group: { _id: 1, orders: { $push: '$$ROOT' } } },
@@ -39,13 +40,13 @@ module.exports = {
                 { $merge: { into: 'reports' } }
             ]);
 
-            // Usar Paginate para limitar y paginar los resultados de la consulta
-            const options = { page: 1, limit: 10 }; // Limitar a 10 productos por página
-            const query = { category: 'Tortas' }; // Filtro por categoría
+            // Usar Paginate para limitar la cantidad de rdos por pagina
+            const options = { page: 1, limit: 10 }; // Limite de 10 prods
+            const query = { category: 'Cakes' }; // Filtro por categoria
             const result = await Product.paginate(query, options);
             console.log(result);
         } catch (error) {
-            console.error("Error al conectar con la base de datos:", error);
+            console.error("Error connecting to the database:", error);
         }
     }
 };

@@ -1,45 +1,69 @@
 const router = require("./views.routes");
+const bcrypt = require("bcrypt");
 
-//funcion Register 
 let users = [];
 
-router.post('/register', (req, res) => {
-    let newUser = req.body;
-    newUser.id = Math.random();
+// Para registrar un nuevo usuario
+router.post('/register', async (req, res) => {
+    try {
+        const newUser = req.body;
+        newUser.id = Math.random();
 
-    // Para setear el rol de admin si se cumple con la condicion requerida
-    if (newUser.useremail === 'adminCoder@coder.com' && password == 'Cod3r123') {
-        newUser.role = 'admin';
-    } else {
-        newUser.role = 'usuario';
+        // Para encriptar la contraseña antes de guardarla
+        const hashedPassword = await bcrypt.hash(newUser.password, 10);
+        newUser.password = hashedPassword;
+
+        // Asignar el rol de admin a determinado usuario
+        if (newUser.useremail === 'adminCoder@coder.com' && newUser.password === 'Cod3r123') {
+            newUser.role = 'admin';
+        } else {
+            newUser.role = 'usuario';
+        }
+
+        users.push(newUser);
+        res.redirect('/views/login-view');
+    } catch (error) {
+        console.error("Error en el registro:", error);
+        res.status(500).send("Error en el registro");
     }
-
-    users.push(newUser);
-    res.redirect('/views/login-view');
 });
 
-router.post('/login', (req, res) => {
-    let newUser = req.body;
-    let userFound = users.find(user => {
-        return user.useremail == newUser.useremail && user.password == newUser.password;
-    });
-    if (userFound) {
-        req.session.user = newUser.user;
-        req.session.password = newUser.password;
-        req.session.role = userFound.role; // Set the role from the user found
+// Login
+router.post('/login', async (req, res) => {
+    try {
+        const { useremail, password } = req.body;
+        const userFound = users.find(user => user.useremail === useremail);
 
-        res.redirect('/home/allProducts');
-        return;
+        if (!userFound) {
+            return res.status(404).send("Usuario no encontrado");
+        }
+
+        // Comparar las contraseñas
+        const passwordMatch = await bcrypt.compare(password, userFound.password);
+        if (passwordMatch) {
+            req.session.user = useremail;
+            req.session.role = userFound.role;
+            res.redirect('/home/allProducts');
+        } else {
+            res.status(401).send("Contraseña incorrecta");
+        }
+    } catch (error) {
+        console.error("Error en login:", error);
+        res.status(500).send("Error en login:");
     }
-    res.send("Usuario o contraseña incorrectos");
 });
 
+// Logout
 router.get('/logout', (req, res) => {
-    req.session.destroy(err => {
-        if (err) res.send('Error en logout');
-    });
-    res.redirect('/views/login-view');
+    try {
+        req.session.destroy();
+        res.redirect('/views/login-view');
+    } catch (error) {
+        console.error("Error en logout:", error);
+        res.status(500).send("Error en logut");
+    }
 });
+
 
 router.get('/user', (req, res) => {
     res.send(users);
